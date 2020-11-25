@@ -3,7 +3,27 @@ const BASE_URL = 'https://thinkful-list-api.herokuapp.com/kasperkain';
 function listAPIFetch(...args) {
   let error = undefined;
 
-  return fetch(...args){}
+  return fetch(...args)
+    .then((result) => {
+      if (!result.ok) {
+        error = { code: result.status };
+
+        if (!result.headers.get('content-type').includes('json')) {
+          error.message = result.statusText;
+          return Promise.reject(error);
+        }
+      }
+
+      return result.json();
+    })
+    .then((data) => {
+      if (error) {
+        error.message = data.message;
+        return Promise.reject(error);
+      }
+
+      return data;
+    });
 }
 
 function getItems() {
